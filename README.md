@@ -23,4 +23,4 @@ TO DO
 TP DO
 
 ## Authors
-If you have any questions email to [Alexey Butyrev](butirev@gmail.com), [Keith Bowers](keith@bowersma.com), [Chris Mitchell] (chris@bowersma.com)
+If you have any questions email to [Alexey Butyrev](butirev@gmail.com), [Keith Bowers](keith@bowersma.com), [Chris Mitchell](chris@bowersma.com)
