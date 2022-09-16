@@ -8,6 +8,14 @@ from itertools import product
 from math import inf, sqrt
 from typing import Optional, Tuple
 
+# Common types
+FrameID = int
+ObjectID = str
+DateTime = datetime.datetime
+Coordinate2D = Tuple[float, float]
+Speed2D = Tuple[float, float]
+DetectionID = str
+
 # Euclidian distance between 2 objects in 2D
 dist = lambda x, y: sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]))
 
@@ -58,8 +66,8 @@ class Session:
             self.data.append(d)
 
     def detect_forklifts_and_people(
-        self, frame_id: Optional[int] = None
-    ) -> Tuple[set, set]:
+        self, frame_id: Optional[FrameID] = None
+    ) -> Tuple[set[DetectionID], set[DetectionID]]:
         """Return two sets of forlifts IDs and people IDs
 
         Args:
@@ -77,7 +85,7 @@ class Session:
         return forklifts, people
 
     def get_distances(
-        self, frame_id: Optional[int] = None, dt: Optional[float] = 0
+        self, frame_id: Optional[FrameID] = None, dt: Optional[float] = 0
     ) -> defaultdict:
         d = defaultdict(lambda: inf)
 
