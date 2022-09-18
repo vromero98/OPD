@@ -62,3 +62,13 @@ def test_get_future_location(detection):
     detection.add_frame(frame = 2, ts ="2022-01-01T00:00:01", x = 0, y = 1)
     assert detection.get_future_location() == (0,1)
     assert detection.get_future_location(1) == (0,2)
+
+def test_get_timestamp(detection):
+    # because length of the default one is 1 the we return None object
+    assert detection.get_timestamp(1).year == 2022
+    assert detection.get_timestamp(1).month == 1
+    assert detection.get_timestamp(1).day == 1
+    detection.add_frame(frame = 2, ts ="2022-03-04T00:00:01", x = 0, y = 1)
+    assert detection.get_timestamp(2).year == 2022
+    assert detection.get_timestamp(2).month == 3
+    assert detection.get_timestamp(2).day == 4
