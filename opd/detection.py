@@ -1,9 +1,16 @@
 from bisect import bisect_left
 import datetime
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, NewType, List
 
+# Common types
+FrameID = int
+ObjectID = str
+DateTime = datetime.datetime
+Coordinate2D = Tuple[float, float]
+Speed2D = Tuple[float, float]
 
-def str2timestamp(s: str) -> datetime.datetime:
+# Helper Functions
+def str2timestamp(s: str) -> DateTime:
     """Converts string into timeframe
     Args:
         s (str): timestamp string
@@ -21,32 +28,40 @@ def str2timestamp(s: str) -> datetime.datetime:
 class Detection:
     def __init__(
         self,
-        id: str,
+        id: ObjectID,
         detection_class: str,
-        frame: int,
-        timestamp: Union[str, datetime.datetime],
+        frame: FrameID,
+        timestamp: Union[str, DateTime],
         x: float,
         y: float,
     ) -> None:
         self.id = id
         self.detection_class = detection_class
         self.frames = [frame]
-        if str == type(timestamp):
-            timestamp = str2timestamp(timestamp)
-        self.timestamps = [timestamp]
+
+        self.timestamps = [
+            str2timestamp(timestamp) if str == type(timestamp) else timestamp
+        ]
         self.X = [x]
         self.Y = [y]
         self.Vx = [0]
         self.Vy = [0]
 
-    def __calculate_speed(self, X, T) -> float:
+    def __calculate_speed(self, X: List[float], T: List[DateTime]) -> float:
+        """Internal function used to add speed to list when we add new frame with add_frame function
+
+        Args:
+            X (List[float]): [description]
+            T (List[DateTime]): [description]
+
+        Returns:
+            float: dX / dT
+        """
         dx = X[-1] - X[-2]
         dt = (T[-1] - T[-2]).total_seconds()
         return dx / dt
 
-    def add_frame(
-        self, frame: int, ts: Union[str, datetime.datetime], x: float, y: float
-    ):
+    def add_frame(self, frame: FrameID, ts: Union[str, DateTime], x: float, y: float):
         """Add New frame to the detection
             For the object id we append the new frame with the new coordinates and timestamp
         Args:
@@ -65,7 +80,7 @@ class Detection:
             self.Vx.append(self.__calculate_speed(self.X, self.timestamps))
             self.Vy.append(self.__calculate_speed(self.Y, self.timestamps))
 
-    def get_coord(self, frame_id: int) -> Tuple[float, float]:
+    def get_coord(self, frame_id: FrameID) -> Coordinate2D:
         """Find coordinates of the object by frame_id
 
         Args:
@@ -78,7 +93,21 @@ class Detection:
         ind = bisect_left(self.frames, frame_id)
         return self.X[ind], self.Y[ind]
 
-    def get_speed(self, frame_id: int) -> Tuple[float, float]:
+    def get_timestamp(self, frame_id: FrameID) -> DateTime:
+        """Find timestamp of the object by frame_id
+
+        Args:
+            frame_id (int): [description]
+
+        Returns:
+            DateTime: timestamp
+        """
+        # better through exception than process
+        ind = bisect_left(self.frames, frame_id)
+        return self.timestamps[ind]
+
+
+    def get_speed(self, frame_id: int) -> Speed2D:
         """Find Speed Vector of the object by frame_id
 
         Args:
@@ -93,8 +122,8 @@ class Detection:
         return self.Vx[ind], self.Vy[ind]
 
     def get_coord_projection(
-        self, frame_id: int, dt: Optional[float] = 0
-    ) -> Tuple[float, float]:
+        self, frame_id: FrameID, dt: Optional[float] = 0
+    ) -> Coordinate2D:
         """Find predicted location of object from frame = frame_id into dt seconds
 
         Args:
@@ -112,7 +141,7 @@ class Detection:
 
         return x0 + Vx * dt, y0 + Vy * dt
 
-    def get_future_location(self, dt: Optional[float] = 0) -> Tuple[float, float]:
+    def get_future_location(self, dt: Optional[float] = 0) -> Coordinate2D:
         """Prediction of future location within after some time dt (seconds)
 
         Args:
