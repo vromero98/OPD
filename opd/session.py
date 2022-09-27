@@ -3,11 +3,10 @@ import datetime
 from collections import defaultdict
 from itertools import combinations
 
-# from detection import Detection
-from . import Detection
+from opd.detection import Detection
 from itertools import product
 from math import inf, sqrt
-from typing import Optional, Tuple
+from typing import Iterable, Optional, Tuple
 
 import pandas as pd
 import numpy as np
@@ -22,7 +21,7 @@ DetectionID = str
 DataFrame = pd.DataFrame
 
 # Euclidian distance between 2 objects in 2D
-dist = lambda x, y: sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]))
+dist = lambda x, y: sqrt((x[0] - x[1])**2 + (y[0] - y[1])**2)
 
 
 class Session:
@@ -136,9 +135,7 @@ class Session:
             df = pd.concat([df, df_to_add])
         return df
 
-    def detect_forklifts_and_people(
-        self, frame_id: Optional[FrameID] = None
-    ) -> Tuple[set[DetectionID], set[DetectionID]]:
+    def detect_forklifts_and_people(self, frame_id: Optional[FrameID] = None) -> Tuple[DetectionID, DetectionID]:
         """Return two sets of forlifts IDs and people IDs
 
         Args:
