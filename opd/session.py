@@ -21,7 +21,7 @@ DetectionID = str
 DataFrame = pd.DataFrame
 
 # Euclidian distance between 2 objects in 2D
-dist = lambda x, y: sqrt((x[0] - x[1])**2 + (y[0] - y[1])**2)
+dist = lambda x, y: sqrt((x[0] - x[1])*(x[0] - x[1]) + (y[0] - y[1])*(y[0] - y[1]))
 
 
 class Session:
